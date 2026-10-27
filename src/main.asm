@@ -263,11 +263,11 @@
 
         ; string data
         hello_world_title:
-            .byte $10, $3e, $4c, $4c, $52, $88, $00, $62, $52, $58, $4c, $3c, $7e ; "Hello, world!"
+            .byte $50, $8a, $98, $98, $9e, $18, $00, $ae, $9e, $a4, $98, $88, $02 ; "Hello, world!"
         test_title:
-            .byte $28, $44, $46, $5a, $00, $46, $5a, $00, $36, $00, $5c, $3e, $5a, $5c, $8a ; "This is a test."
+            .byte $68, $90, $92, $a6, $00, $92, $a6, $00, $82, $00, $a8, $8a, $a6, $a8, $1c ; "This is a test."
         lorem_ipsum_title:
-            .byte $18, $52, $58, $3e, $4e, $00, $46, $54, $5a, $5e, $4e, $00, $3c, $52, $4c, $52, $58, $00, $5a, $46, $5c, $00, $36, $4e, $3e, $5c ; "Lorem ipsum dolor sit amet"
+            .byte $58, $9e, $a4, $8a, $9a, $00, $92, $a0, $a6, $aa, $9a, $00, $88, $9e, $98, $9e, $a4, $00, $a6, $92, $a8, $00, $82, $9a, $8a, $a8 ; "Lorem ipsum dolor sit amet"
 
     palette_data:
         ; background
