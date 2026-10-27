@@ -25,8 +25,6 @@
     temp: .res 1 ; temporary variable
 
 .segment "CODE"
-    .res 16384 ; use lower 16K of last PRG-ROM bank
-
     ; interrupt handlers
     on_reset:
         sei ; disable interrupts
