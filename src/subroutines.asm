@@ -52,6 +52,9 @@ render_entry:
     adc #$20 ; skip first overscan line of background data
     sta address ; store result in source address
 
+    bcc :+ ; if carry bit is clear, skip incrementing high byte
+    inc address + 1 ; increment high byte of entry title address
+:
     lda PPU_STATUS ; reset address latch
 
     lda address + 1 ; high byte of background data address in PPU memory
