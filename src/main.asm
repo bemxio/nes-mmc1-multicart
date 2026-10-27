@@ -272,25 +272,7 @@
     .include "subroutines.asm"
 
 .segment "RODATA"
-    entry_titles:
-        ; lookup table
-        .word hello_world_title
-        .word test_title
-        .word lorem_ipsum_title
-
-        ; string lengths
-        title_lengths:
-            .byte test_title - hello_world_title
-            .byte lorem_ipsum_title - test_title
-            .byte palette_data - lorem_ipsum_title
-
-        ; string data
-        hello_world_title:
-            .byte $50, $8a, $98, $98, $9e, $18, $00, $ae, $9e, $a4, $98, $88, $02 ; "Hello, world!"
-        test_title:
-            .byte $68, $90, $92, $a6, $00, $92, $a6, $00, $82, $00, $a8, $8a, $a6, $a8, $1c ; "This is a test."
-        lorem_ipsum_title:
-            .byte $58, $9e, $a4, $8a, $9a, $00, $92, $a0, $a6, $aa, $9a, $00, $88, $9e, $98, $9e, $a4, $00, $a6, $92, $a8, $00, $82, $9a, $8a, $a8 ; "Lorem ipsum dolor sit amet"
+    .include "../roms/entries.asm" ; entry titles
 
     palette_data:
         ; background

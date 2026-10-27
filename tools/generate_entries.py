@@ -14,12 +14,13 @@ with open("roms/entries.asm", "w") as file:
         file.write(f"    .word {entry["id"]}_title\n")
 
     file.write("\n    ; string lengths\n")
+    file.write("    title_lengths:\n")
 
     for index in range(len(entries)):
         if index == len(entries) - 1:
-            file.write(f"    .byte entry_titles_end - {entries[index]["id"]}_title\n")
+            file.write(f"        .byte entry_titles_end - {entries[index]["id"]}_title\n")
         else:
-            file.write(f"    .byte {entries[index + 1]["id"]}_title - {entries[index]["id"]}_title\n")
+            file.write(f"        .byte {entries[index + 1]["id"]}_title - {entries[index]["id"]}_title\n")
 
     file.write("\n    ; string data\n")
 

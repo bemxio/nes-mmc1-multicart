@@ -1,0 +1,42 @@
+[
+    {
+        "id": "balloon_fight",
+        "name": "Balloon Fight"
+    },
+    {
+        "id": "bomberman",
+        "name": "Bomberman"
+    },
+    {
+        "id": "donkey_kong",
+        "name": "Donkey Kong"
+    },
+    {
+        "id": "duck_hunt",
+        "name": "Duck Hunt"
+    },
+    {
+        "id": "excitebike",
+        "name": "Excitebike"
+    },
+    {
+        "id": "ice_climber",
+        "name": "Ice Climber"
+    },
+    {
+        "id": "mario_bros",
+        "name": "Mario Bros."
+    },
+    {
+        "id": "pacman",
+        "name": "Pac-Man"
+    },
+    {
+        "id": "pinball",
+        "name": "Pinball"
+    },
+    {
+        "id": "tennis",
+        "name": "Tennis"
+    }
+]
