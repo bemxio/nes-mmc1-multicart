@@ -4,10 +4,11 @@
 ; segments
 .segment "HEADER"
     .byte "NES", $1a ; identification string
-    .byte 1 ; size of PRG-ROM in 16K units
+    .byte 16 ; size of PRG-ROM in 16K units
     .byte 0 ; size of CHR-ROM in 8K units (CHR-RAM)
 
-    .byte %00000000 ; lower nibble of mapper, mirroring, battery, trainer
+    ; iNES Mapper 1 (MMC1)
+    .byte %00010000 ; lower nibble of mapper, mirroring, battery, trainer
     .byte %00000000 ; upper nibble of mapper, VS/Playchoice, NES 2.0
 
     .byte 0 ; PRG-RAM size
@@ -24,6 +25,8 @@
     temp: .res 1 ; temporary variable
 
 .segment "CODE"
+    .res 16384 ; use lower 16K of last PRG-ROM bank
+
     ; interrupt handlers
     on_reset:
         sei ; disable interrupts
@@ -32,6 +35,10 @@
         ; initalize stack pointer
         ldx #$ff ; stack address
         txs ; transfer value to stack pointer
+
+        ; reset mapper
+        lda #$80 ; reset MMC1 shift register
+        sta MMC1_CTRL ; send value to MMC1 control register
 
         ; disable NMI, rendering, and DMC IRQs
         lda #0 ; value to send to appropriate registers

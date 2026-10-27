@@ -14,6 +14,9 @@ APU_FRAME_COUNTER = $4017
 
 JOY1 = $4016
 
+MMC1_CTRL = $8000
+MMC1_PRG = $E000
+
 ; memory locations
 OAM_BUFFER = $0200 ; OAM buffer address in RAM
 
