@@ -82,8 +82,8 @@
         ldx #36 ; number of pages
         ldy #0 ; byte counter
 
-        sty PPU_ADDR ; send value to PPU address register (low byte of destination address)
         sty PPU_ADDR ; send value to PPU address register (high byte of destination address)
+        sty PPU_ADDR ; send value to PPU address register (low byte of destination address)
 
         clear_ppu:
             sta PPU_DATA ; send value to PPU data register
@@ -214,7 +214,7 @@
 
                 lda state ; load menu state to accumulator
                 and #%01000000 ; check if button was pressed in previous frame
-                bne :+ ; jump if it was
+                bne controller_check_start ; jump if it was
 
                 lda state ; load menu state to accumulator
                 ora #%01000000 ; set up button pressed bit
@@ -222,7 +222,7 @@
 
                 ; decrement entry index
                 lda entry_index ; load current entry index
-                beq :+ ; skip decrementing if current entry is first one
+                beq controller_check_start ; skip decrementing if current entry is first one
 
                 dec entry_index ; decrement entry index
 
@@ -240,6 +240,100 @@
                 lda state ; load menu state to accumulator
                 and #%10111111 ; clear up button pressed bit
                 sta state ; store updated menu state
+            
+            controller_check_start:
+                lda controls ; load controller state to accumulator
+                and #%00010000 ; check if button is pressed
+                beq :+ ; jump to end of loop if not
+
+                lda #0 ; disable rendering
+                sta PPU_MASK ; send value to PPU mask register
+
+                ; calculate source address
+                lda entry_index ; load current entry index
+                and #%00000001 ; get modulo 2 of entry index
+
+                .repeat 5 ; multiply by 32 to get offset for source address
+                    asl ; shift value left
+                .endrep
+
+                clc ; clear carry flag
+                adc #$80 ; add base address to high byte of source address
+                sta address + 1 ; store result in source address
+
+                lda #$00 ; low byte of source address
+                sta address ; store value in source address
+
+                ; calculate bank number
+                lda entry_index ; load current entry index
+                lsr ; divide by 2
+
+                clc ; clear carry flag
+                adc #10 ; add offset to get bank number
+
+                jsr switch_bank ; switch to selected bank
+
+                ; copy CHR data to PPU
+                lda PPU_STATUS ; reset address latch
+
+                ldx #32 ; number of pages of data
+                ldy #0 ; offset for data
+
+                sty PPU_ADDR ; send value to PPU address register (high byte of destination address)
+                sty PPU_ADDR ; send value to PPU address register (low byte of destination address)
+
+                copy_entry_tiles:
+                    lda (address), y ; load byte of data
+                    sta PPU_DATA ; send value to PPU data register
+
+                    iny ; increment offset
+                    bne copy_entry_tiles ; loop if not done
+
+                    inc address + 1 ; increment high byte of source address
+
+                    dex ; decrement number of pages of data
+                    bne copy_entry_tiles ; loop if not done
+
+                ; copy entry loader to RAM
+                lda #$07 ; high byte of destination address
+                sta address + 1 ; store value in destination address
+
+                lda #$00 ; low byte of destination address
+                sta address ; store value in destination address
+
+                ldy #0 ; offset for entry loader
+
+                copy_entry_loader:
+                    lda entry_loader, y ; load byte of entry loader
+                    sta (address), y ; store byte to destination address
+
+                    iny ; increment offset
+                    cpy #(entry_loader_end - entry_loader) ; check if all bytes have been copied
+                    bne copy_entry_loader ; loop if not done
+
+                jmp $0700 ; jump to entry loader in RAM
+
+                entry_loader:
+                    ; switch MMC1 banking mode
+                    lda #%01000 ; fixed first PRG-ROM bank, one-screen nametable arrangement
+                    sta MMC1_CTRL ; send first bit to MMC1 control register
+
+                    .repeat 4 ; repeat 4 times to send remaining bits
+                        lsr a ; shift accumulator right to get next bit
+                        sta MMC1_CTRL ; send next bit to MMC1 control register
+                    .endrep
+
+                    ; switch to appropriate PRG-ROM bank
+                    lda entry_index ; load current entry index
+                    sta MMC1_PRG ; send first bit to MMC1 PRG-ROM bank register
+
+                    .repeat 4 ; repeat 4 times to send remaining bits
+                        lsr ; shift accumulator right to get next bit
+                        sta MMC1_PRG ; send next bit to MMC1 PRG-ROM bank register
+                    .endrep
+
+                    jmp $C000 ; jump to entry code
+                entry_loader_end:
         :
             ; unset vblank bit inside state
             lda state ; load current state

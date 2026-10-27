@@ -31,6 +31,16 @@ read_joystick: ; https://www.nesdev.org/wiki/Controller_reading_code#Basic_Examp
 
     rts ; return from subroutine
 
+switch_bank:
+    sta MMC1_PRG ; send first bit to MMC1 PRG-ROM bank register
+
+    .repeat 4 ; repeat 4 times to send remaining bits
+        lsr ; shift accumulator right to get next bit
+        sta MMC1_PRG ; send next bit to MMC1 PRG-ROM bank register
+    .endrep
+
+    rts ; return from subroutine
+
 render_entry:
     lda #$20 ; high byte of background data address in PPU memory
     sta address + 1 ; store value in source address
