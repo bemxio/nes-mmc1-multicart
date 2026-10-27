@@ -6,7 +6,7 @@ def text_to_tiles(text: str) -> list[int]:
 with open("roms/entries.json", "r") as file:
     entries = json.load(file)
 
-with open("roms/entries.asm", "w") as file:
+with open("roms/titles.asm", "w") as file:
     file.write("entry_titles:")
     file.write("\n    ; lookup table\n")
 
@@ -29,3 +29,17 @@ with open("roms/entries.asm", "w") as file:
         file.write(f"        .byte {", ".join(f"${value:02x}" for value in text_to_tiles(entry["name"]))} ; \"{entry["name"]}\"\n")
 
     file.write("entry_titles_end:\n")
+
+with open("roms/banks.asm", "w") as file:
+    file.write("; PRG-ROM\n")
+
+    for index, entry in enumerate(entries):
+        file.write(f".segment \"BANK{index}\"\n")
+        file.write(f"    .incbin \"../roms/{entry["id"]}.nes\", $10, $4000\n")
+
+    file.write("\n; CHR-ROM\n")
+
+    for index in range(0, len(entries), 2):
+        file.write(f".segment \"BANK{index // 2 + len(entries)}\"\n")
+        file.write(f"    .incbin \"../roms/{entries[index]["id"]}.nes\", $4010, $2000\n")
+        file.write(f"    .incbin \"../roms/{entries[index + 1]["id"]}.nes\", $4010, $2000\n")

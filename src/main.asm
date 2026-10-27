@@ -270,7 +270,7 @@
     .include "subroutines.asm"
 
 .segment "RODATA"
-    .include "../roms/entries.asm" ; entry titles
+    .include "../roms/titles.asm" ; entry titles
 
     palette_data:
         ; background
@@ -292,3 +292,5 @@
 .segment "VECTORS"
     .word on_vblank ; NMI handler address
     .word on_reset ; reset handler address
+
+.include "../roms/banks.asm" ; PRG-ROM and CHR-ROM entry data
