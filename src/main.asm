@@ -284,6 +284,7 @@
 
     font_data:
         .incbin "assets/font.chr" ; tile data for font characters
+    font_data_end:
 
 .segment "VECTORS"
     .word on_vblank ; NMI handler address

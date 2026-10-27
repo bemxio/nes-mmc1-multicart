@@ -18,7 +18,7 @@ JOY1 = $4016
 OAM_BUFFER = $0200 ; OAM buffer address in RAM
 
 ; amounts and sizes
-FONT_SIZE = 12 ; size of font CHR data in pages
+FONT_SIZE = (font_data_end - font_data) / 256 ; size of font CHR data in pages
 ENTRY_AMOUNT = (title_lengths - entry_titles) / 2 ; amount of entries in menu
 
 ; background and text colors
