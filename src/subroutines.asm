@@ -33,7 +33,7 @@ read_joystick: ; https://www.nesdev.org/wiki/Controller_reading_code#Basic_Examp
 
 render_entry:
     lda #$20 ; high byte of background data address in PPU memory
-    sta address + 1 ; store value in variable
+    sta address + 1 ; store value in source address
 
     txa ; transfer offset to accumulator
     ldy #0 ; counter for multiplication
@@ -48,9 +48,9 @@ render_entry:
         cpy #5 ; check if offset was shifted 5 times
         bne render_entry_multiply ; loop if not done
 
-    clc ; clear carry bit
+    clc ; clear carry flag
     adc #$20 ; skip first overscan line of background data
-    sta address ; store result in variable
+    sta address ; store result in source address
 
     lda PPU_STATUS ; reset address latch
 
@@ -65,10 +65,10 @@ render_entry:
     tay ; transfer result to Y register
 
     lda entry_titles, y ; load low byte of entry title address
-    sta address ; store address in low byte of variable
+    sta address ; store address in low byte of destination address
 
     lda entry_titles + 1, y ; load high byte of entry title address
-    sta address + 1 ; store address in high byte of variable
+    sta address + 1 ; store address in high byte of destination address
 
     lda title_lengths, x ; load length of entry title
     sta temp ; store length in temporary variable
@@ -81,7 +81,7 @@ render_entry:
         cpx entry_index ; check if current entry is selected
         bne :+ ; if not, skip incrementing tile index
 
-        clc ; clear carry bit
+        clc ; clear carry flag
         adc #1 ; increment tile index
     :
         sta PPU_DATA ; send character to PPU data register

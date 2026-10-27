@@ -17,9 +17,8 @@
     .res 5 ; padding
 
 .segment "ZEROPAGE"
-    flags: .res 1 ; various flags, mainly for vblank
+    state: .res 1 ; used for vblank and previous up/down button presses
     controls: .res 1 ; state of controller buttons
-    previous_controls: .res 1 ; state of controller buttons from previous frame
     entry_index: .res 1 ; index of currently selected entry
     address: .res 2 ; source/destination address
     temp: .res 1 ; temporary variable
@@ -161,11 +160,8 @@
         sta PPU_MASK ; send value to PPU mask register
 
         menu_loop:
-            bit flags ; check if vblank has occurred
+            bit state ; check if vblank has occurred
             bpl menu_loop ; loop if not
-
-            lda controls ; load previous controller state
-            sta previous_controls ; store in variable
 
             jsr read_joystick ; read controller input
 
@@ -173,11 +169,15 @@
             controller_check_down:
                 lda controls ; load controller state to accumulator
                 and #%00000100 ; check if button is pressed
-                beq controller_check_up ; jump if it is not
+                beq controller_unset_down ; jump to unsetting bit if it is not
 
-                lda previous_controls ; load previous controller state
-                and #%00000100 ; check if button was pressed in previous frame
+                lda state ; load menu state to accumulator
+                and #%00100000 ; check if button was pressed in previous frame
                 bne controller_check_up ; jump if it was
+
+                lda state ; load menu state to accumulator
+                ora #%00100000 ; set down button pressed bit
+                sta state ; store updated menu state
 
                 ; increment entry index
                 lda entry_index ; load current entry index
@@ -194,16 +194,26 @@
                 jsr render_entry ; render current entry title to background
 
                 jsr reset_scroll ; reset scroll position
+                jmp :+ ; jump to end of loop
+
+            controller_unset_down:
+                lda state ; load menu state to accumulator
+                and #%11011111 ; clear down button pressed bit
+                sta state ; store updated menu state
 
             ; up button check
             controller_check_up:
                 lda controls ; load controller state to accumulator
                 and #%00001000 ; check if button is pressed
-                beq :+ ; jump if it is not
+                beq controller_unset_up ; jump to unsetting bit if it is not
 
-                lda previous_controls ; load previous controller state
-                and #%00001000 ; check if button was pressed in previous frame
+                lda state ; load menu state to accumulator
+                and #%01000000 ; check if button was pressed in previous frame
                 bne :+ ; jump if it was
+
+                lda state ; load menu state to accumulator
+                ora #%01000000 ; set up button pressed bit
+                sta state ; store updated menu state
 
                 ; decrement entry index
                 lda entry_index ; load current entry index
@@ -219,11 +229,17 @@
                 jsr render_entry ; render current entry title to background
 
                 jsr reset_scroll ; reset scroll position
+                jmp :+ ; jump to end of loop
+
+            controller_unset_up:
+                lda state ; load menu state to accumulator
+                and #%10111111 ; clear up button pressed bit
+                sta state ; store updated menu state
         :
-            ; reset vblank bit inside flags
-            lda flags ; load current flags
+            ; unset vblank bit inside state
+            lda state ; load current state
             and #%01111111 ; clear vblank bit
-            sta flags ; store updated flags
+            sta state ; store updated state
 
             jmp menu_loop ; loop forever
 
@@ -238,9 +254,9 @@
         sta OAM_DMA ; send value to OAM DMA register
 
         ; set vblank bit for main loop
-        lda flags ; load current flags
+        lda state ; load current state
         ora #%10000000 ; set vblank bit
-        sta flags ; store updated flags
+        sta state ; store updated state
 
         pla ; pull accumulator from stack
         rti ; return from interrupt
