@@ -6,7 +6,7 @@ def text_to_tiles(text: str) -> list[int]:
 with open("roms/entries.json", "r") as file:
     entries = json.load(file)
 
-with open("roms/titles.asm", "w") as file:
+with open("src/titles.asm", "w") as file:
     file.write("entry_titles:")
     file.write("\n    ; lookup table\n")
 
@@ -30,7 +30,7 @@ with open("roms/titles.asm", "w") as file:
 
     file.write("entry_titles_end:\n")
 
-with open("roms/banks.asm", "w") as file:
+with open("src/data.asm", "w") as file:
     file.write("; PRG-ROM\n")
 
     for index, entry in enumerate(entries):

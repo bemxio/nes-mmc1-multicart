@@ -240,7 +240,7 @@
                 lda state ; load menu state to accumulator
                 and #%10111111 ; clear up button pressed bit
                 sta state ; store updated menu state
-            
+
             controller_check_start:
                 lda controls ; load controller state to accumulator
                 and #%00010000 ; check if button is pressed
@@ -364,7 +364,7 @@
     .include "subroutines.asm"
 
 .segment "RODATA"
-    .include "../roms/titles.asm" ; entry titles
+    .include "titles.asm" ; entry titles
 
     palette_data:
         ; background
@@ -387,4 +387,4 @@
     .word on_vblank ; NMI handler address
     .word on_reset ; reset handler address
 
-.include "../roms/banks.asm" ; PRG-ROM and CHR-ROM entry data
+.include "data.asm" ; PRG-ROM and CHR-ROM entry data
