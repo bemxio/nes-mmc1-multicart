@@ -17,12 +17,15 @@ for filename in sorted(os.listdir(ROMS_DIR)):
     if not filename.endswith(".nes"):
         continue
 
-    title = filename[:filename.find("(") - 1]
+    try:
+        title = filename[:filename.index("(") - 1]
+    except ValueError:
+        print(f"Warning: '{filename}' doesn't follow the No-Intro naming convention. Using filename as title instead.")
+        title = filename.removesuffix(".nes")
+
     label = "".join(filter(lambda c: c.isalnum() or c in "_", title.lower().replace(" ", "_")))
 
     entries[label] = {"title": title, "path": f"{ROMS_DIR}/{filename}"}
-
-print(entries)
 
 # write entry titles to source file
 with open(TITLES_PATH, "w") as file:
@@ -60,8 +63,6 @@ with open(DATA_PATH, "w") as file:
     file.write("\n; CHR-ROM\n")
 
     for index, (lower, upper) in enumerate(zip(list(entries.values())[::2], list(entries.values())[1::2])):
-        print(index, lower, upper)
-
         file.write(f".segment \"BANK{index + len(entries)}\"\n")
         file.write(f"    .incbin \"{lower["path"]}\", $4010, $2000\n")
         file.write(f"    .incbin \"{upper["path"]}\", $4010, $2000\n")
