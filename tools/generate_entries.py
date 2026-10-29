@@ -17,15 +17,31 @@ for filename in sorted(os.listdir(ROMS_DIR)):
     if not filename.endswith(".nes"):
         continue
 
+    path = f"{ROMS_DIR}/{filename}"
+
+    with open(path, "rb") as file:
+        header = file.read(16)
+
+    if header[:4] != b"NES\x1a":
+        print(f"Warning: \"{filename}\" is not a valid NES ROM. Skipping.")
+        continue
+
+    if (header[7] & 0xf0) | (header[6] >> 4) != 0:
+        print(f"Warning: \"{filename}\" uses a mapper other than NROM. Skipping.")
+        continue
+
     try:
         title = filename[:filename.index("(") - 1]
     except ValueError:
-        print(f"Warning: '{filename}' doesn't follow the No-Intro naming convention. Using filename as title instead.")
+        print(f"Warning: \"{filename}\" doesn't follow the No-Intro naming convention. Using filename as title instead.")
         title = filename.removesuffix(".nes")
 
     label = "".join(filter(lambda c: c.isalnum() or c in "_", title.lower().replace(" ", "_")))
 
-    entries[label] = {"title": title, "path": f"{ROMS_DIR}/{filename}"}
+    entries[label] = {
+        "title": title,
+        "path": path
+    }
 
 # write entry titles to source file
 with open(TITLES_PATH, "w") as file:
