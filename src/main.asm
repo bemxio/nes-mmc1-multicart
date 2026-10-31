@@ -94,6 +94,23 @@
             dex ; decrement number of pages
             bne clear_ppu ; loop if not done
 
+        ; copy entry loader to RAM
+        lda #$07 ; high byte of destination address
+        sta address + 1 ; store value in destination address
+
+        lda #$00 ; low byte of destination address
+        sta address ; store value in destination address
+
+        ldy #0 ; offset for entry loader
+
+        copy_entry_loader:
+            lda entry_loader, y ; load byte of entry loader
+            sta (address), y ; store byte to destination address
+
+            iny ; increment offset
+            cpy #(entry_loader_end - entry_loader) ; check if all bytes have been copied
+            bne copy_entry_loader ; loop if not done
+
         ; copy tile data to PPU
         lda PPU_STATUS ; reset address latch
 
@@ -293,23 +310,6 @@
 
                     dex ; decrement number of pages of data
                     bne copy_entry_tiles ; loop if not done
-
-                ; copy entry loader to RAM
-                lda #$07 ; high byte of destination address
-                sta address + 1 ; store value in destination address
-
-                lda #$00 ; low byte of destination address
-                sta address ; store value in destination address
-
-                ldy #0 ; offset for entry loader
-
-                copy_entry_loader:
-                    lda entry_loader, y ; load byte of entry loader
-                    sta (address), y ; store byte to destination address
-
-                    iny ; increment offset
-                    cpy #(entry_loader_end - entry_loader) ; check if all bytes have been copied
-                    bne copy_entry_loader ; loop if not done
 
                 jmp $0700 ; jump to entry loader in RAM
         :
