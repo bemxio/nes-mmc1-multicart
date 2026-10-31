@@ -364,7 +364,7 @@
     .include "subroutines.asm"
 
 .segment "RODATA"
-    .include "titles.asm" ; entry titles
+    .include "entries.asm" ; entry titles and MMC1 control flags
 
     palette_data:
         ; background

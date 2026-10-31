@@ -3,7 +3,7 @@ from itertools import zip_longest
 
 # constants
 ROMS_DIR = "roms"
-TITLES_PATH = "src/titles.asm"
+ENTRIES_PATH = "src/entries.asm"
 DATA_PATH = "src/data.asm"
 
 # functions
@@ -44,7 +44,7 @@ for filename in sorted(os.listdir(ROMS_DIR)):
     }
 
 # write entry titles to source file
-with open(TITLES_PATH, "w") as file:
+with open(ENTRIES_PATH, "w") as file:
     file.write("entry_titles:")
     file.write("\n    ; lookup table\n")
 
