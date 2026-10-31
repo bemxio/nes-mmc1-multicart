@@ -37,11 +37,15 @@ for filename in sorted(os.listdir(ROMS_DIR)):
         title = filename.removesuffix(".nes")
 
     label = "".join(filter(lambda c: c.isalnum() or c in "_", title.lower().replace(" ", "_")))
+    flags = (1 << 3) | (header[6] ^ 0x01) + 2 # switchable lower 16 KiB bank and nametable arrangement
 
     entries[label] = {
         "title": title,
-        "path": path
+        "path": path,
+        "flags": flags
     }
+
+    #print(title, path, bin(flags))
 
 # write entry titles to source file
 with open(ENTRIES_PATH, "w") as file:
@@ -56,7 +60,7 @@ with open(ENTRIES_PATH, "w") as file:
 
     for previous, current in zip_longest(entries.keys(), list(entries.keys())[1:]):
         if current is None:
-            file.write(f"        .byte entry_titles_end - {previous}_title\n")
+            file.write(f"        .byte entry_flags - {previous}_title\n")
         else:
             file.write(f"        .byte {current}_title - {previous}_title\n")
 
@@ -66,7 +70,9 @@ with open(ENTRIES_PATH, "w") as file:
         file.write(f"    {label}_title:\n")
         file.write(f"        .byte {", ".join(f"${value:02x}" for value in text_to_tiles(entry["title"]))} ; \"{entry["title"]}\"\n")
 
-    file.write("entry_titles_end:\n")
+    file.write("\n; MMC1 control flags\n")
+    file.write("entry_flags:\n")
+    file.write(f"    .byte {", ".join(f"%{entry["flags"]:05b}" for entry in entries.values())}\n")
 
 # write entry data to source file
 with open(DATA_PATH, "w") as file:

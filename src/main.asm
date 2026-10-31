@@ -312,28 +312,6 @@
                     bne copy_entry_loader ; loop if not done
 
                 jmp $0700 ; jump to entry loader in RAM
-
-                entry_loader:
-                    ; switch MMC1 banking mode
-                    lda #%01000 ; fixed first PRG-ROM bank, one-screen nametable arrangement
-                    sta MMC1_CTRL ; send first bit to MMC1 control register
-
-                    .repeat 4 ; repeat 4 times to send remaining bits
-                        lsr a ; shift accumulator right to get next bit
-                        sta MMC1_CTRL ; send next bit to MMC1 control register
-                    .endrep
-
-                    ; switch to appropriate PRG-ROM bank
-                    lda entry_index ; load current entry index
-                    sta MMC1_PRG ; send first bit to MMC1 PRG-ROM bank register
-
-                    .repeat 4 ; repeat 4 times to send remaining bits
-                        lsr ; shift accumulator right to get next bit
-                        sta MMC1_PRG ; send next bit to MMC1 PRG-ROM bank register
-                    .endrep
-
-                    jmp $C000 ; jump to entry code
-                entry_loader_end:
         :
             ; unset vblank bit inside state
             lda state ; load current state
@@ -359,6 +337,31 @@
 
         pla ; pull accumulator from stack
         rti ; return from interrupt
+
+    ; entry loader (running in RAM)
+    entry_loader:
+        ; set entry MMC1 control flags
+        ldx entry_index ; load current entry index
+        lda entry_flags, x ; load MMC1 control flags for selected entry
+
+        sta MMC1_CTRL ; send first bit to MMC1 control register
+
+        .repeat 4 ; repeat 4 times to send remaining bits
+            lsr a ; shift accumulator right to get next bit
+            sta MMC1_CTRL ; send next bit to MMC1 control register
+        .endrep
+
+        ; switch to appropriate PRG-ROM bank
+        txa ; transfer entry index to accumulator
+        sta MMC1_PRG ; send first bit to MMC1 PRG-ROM bank register
+
+        .repeat 4 ; repeat 4 times to send remaining bits
+            lsr ; shift accumulator right to get next bit
+            sta MMC1_PRG ; send next bit to MMC1 PRG-ROM bank register
+        .endrep
+
+        jmp $C000 ; jump to entry code
+    entry_loader_end:
 
     ; subroutines
     .include "subroutines.asm"

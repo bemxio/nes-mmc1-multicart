@@ -22,7 +22,7 @@ entry_titles:
         .byte pacman_title - mario_bros_title
         .byte pinball_title - pacman_title
         .byte tennis_title - pinball_title
-        .byte entry_titles_end - tennis_title
+        .byte entry_flags - tennis_title
 
     ; string data
     balloon_fight_title:
@@ -45,4 +45,7 @@ entry_titles:
         .byte $60, $92, $9c, $84, $82, $98, $98 ; "Pinball"
     tennis_title:
         .byte $68, $8a, $9c, $9c, $92, $a6 ; "Tennis"
-entry_titles_end:
+
+; MMC1 control flags
+entry_flags:
+    .byte %01011, %01010, %01011, %01010, %01010, %01011, %01011, %01011, %01011, %01011
