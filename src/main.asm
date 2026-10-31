@@ -360,7 +360,7 @@
             sta MMC1_PRG ; send next bit to MMC1 PRG-ROM bank register
         .endrep
 
-        jmp $C000 ; jump to entry code
+        jmp ($FFFC) ; jump to entry code
     entry_loader_end:
 
     ; subroutines
