@@ -16,9 +16,9 @@
 .segment "BANK7"
     .incbin "roms/Pac-Man (USA) (Namco).nes", $10, $4000
 .segment "BANK8"
-    .incbin "roms/Pinball (Japan, USA) (En).nes", $10, $4000
+    .incbin "roms/Super Mario Bros. (World).nes", $10, $4000
 .segment "BANK9"
-    .incbin "roms/Tennis (Japan, USA) (En).nes", $10, $4000
+    .incbin "roms/Super Mario Bros. (World).nes", $4010, $4000
 
 ; CHR-ROM
 .segment "BANK10"
@@ -34,5 +34,4 @@
     .incbin "roms/Mario Bros. (World).nes", $4010, $2000
     .incbin "roms/Pac-Man (USA) (Namco).nes", $4010, $2000
 .segment "BANK14"
-    .incbin "roms/Pinball (Japan, USA) (En).nes", $4010, $2000
-    .incbin "roms/Tennis (Japan, USA) (En).nes", $4010, $2000
+    .incbin "roms/Super Mario Bros. (World).nes", $8010, $2000

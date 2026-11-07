@@ -37,15 +37,20 @@ for filename in sorted(os.listdir(ROMS_DIR)):
         title = filename.removesuffix(".nes")
 
     label = "".join(filter(lambda c: c.isalnum() or c in "_", title.lower().replace(" ", "_")))
-    flags = (1 << 3) | (header[6] ^ 0x01) + 2 # switchable lower 16 KiB bank and nametable arrangement
+    flags = (header[6] ^ 0x01) + 2 # nametable arrangement
+
+    if header[4] == 1: # 16 KiB PRG-ROM
+        flags |= 0x8 # fix lower bank, switch upper bank
+
+    #print("Title:", title)
+    #print("Path:", path)
+    #print("Flags:", f"%{flags:05b}\n")
 
     entries[label] = {
         "title": title,
         "path": path,
         "flags": flags
     }
-
-    #print(title, path, bin(flags))
 
 # write entry titles to source file
 with open(ENTRIES_PATH, "w") as file:
@@ -75,16 +80,30 @@ with open(ENTRIES_PATH, "w") as file:
     file.write(f"    .byte {", ".join(f"%{entry["flags"]:05b}" for entry in entries.values())}\n")
 
 # write entry data to source file
+bank_index = 0
+
 with open(DATA_PATH, "w") as file:
     file.write("; PRG-ROM\n")
 
-    for index, entry in enumerate(entries.values()):
-        file.write(f".segment \"BANK{index}\"\n")
+    for entry in entries.values():
+        file.write(f".segment \"BANK{bank_index}\"\n")
         file.write(f"    .incbin \"{entry["path"]}\", $10, $4000\n")
+
+        if not entry["flags"] & 0x8: # 32 KiB PRG-ROM
+            bank_index += 1
+
+            file.write(f".segment \"BANK{bank_index}\"\n")
+            file.write(f"    .incbin \"{entry["path"]}\", $4010, $4000\n")
+
+        bank_index += 1
 
     file.write("\n; CHR-ROM\n")
 
-    for index, (lower, upper) in enumerate(zip(list(entries.values())[::2], list(entries.values())[1::2])):
-        file.write(f".segment \"BANK{index + len(entries)}\"\n")
-        file.write(f"    .incbin \"{lower["path"]}\", $4010, $2000\n")
-        file.write(f"    .incbin \"{upper["path"]}\", $4010, $2000\n")
+    for lower, upper in zip_longest(list(entries.values())[::2], list(entries.values())[1::2]):
+        file.write(f".segment \"BANK{bank_index}\"\n")
+        file.write(f"    .incbin \"{lower["path"]}\", ${4010 if lower["flags"] & 0x8 else 8010}, $2000\n")
+
+        if upper is not None:
+            file.write(f"    .incbin \"{upper["path"]}\", ${4010 if upper["flags"] & 0x8 else 8010}, $2000\n")
+
+        bank_index += 1

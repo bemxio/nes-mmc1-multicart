@@ -8,8 +8,7 @@ entry_titles:
     .word ice_climber_title
     .word mario_bros_title
     .word pacman_title
-    .word pinball_title
-    .word tennis_title
+    .word super_mario_bros_title
 
     ; string lengths
     title_lengths:
@@ -20,9 +19,8 @@ entry_titles:
         .byte ice_climber_title - excitebike_title
         .byte mario_bros_title - ice_climber_title
         .byte pacman_title - mario_bros_title
-        .byte pinball_title - pacman_title
-        .byte tennis_title - pinball_title
-        .byte entry_flags - tennis_title
+        .byte super_mario_bros_title - pacman_title
+        .byte entry_flags - super_mario_bros_title
 
     ; string data
     balloon_fight_title:
@@ -41,11 +39,9 @@ entry_titles:
         .byte $5a, $82, $a4, $92, $9e, $00, $44, $a4, $9e, $a6, $1c ; "Mario Bros."
     pacman_title:
         .byte $60, $82, $86, $1a, $5a, $82, $9c ; "Pac-Man"
-    pinball_title:
-        .byte $60, $92, $9c, $84, $82, $98, $98 ; "Pinball"
-    tennis_title:
-        .byte $68, $8a, $9c, $9c, $92, $a6 ; "Tennis"
+    super_mario_bros_title:
+        .byte $66, $aa, $a0, $8a, $a4, $00, $5a, $82, $a4, $92, $9e, $00, $44, $a4, $9e, $a6, $1c ; "Super Mario Bros."
 
 ; MMC1 control flags
 entry_flags:
-    .byte %01011, %01010, %01011, %01010, %01010, %01011, %01011, %01011, %01011, %01011
+    .byte %01011, %01010, %01011, %01010, %01010, %01011, %01011, %01011, %00010
