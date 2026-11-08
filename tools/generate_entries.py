@@ -53,7 +53,13 @@ for filename in sorted(os.listdir(ROMS_DIR)):
     }
 
 # sort entries by PRG-ROM size (16 KiB first, then 32 KiB)
-sorted_entries = sorted(entries.values(), key=lambda entry: not entry["flags"] & 0x8)
+sorted_entries = []
+
+for index, entry in enumerate(sorted(entries.values(), key=lambda entry: not entry["flags"] & 0x8)):
+    if not entry["flags"] & 0x8 and index % 2 != 0:
+        sorted_entries.append({})
+
+    sorted_entries.append(entry)
 
 # write entry titles to source file
 with open(ENTRIES_PATH, "w") as file:
@@ -95,6 +101,11 @@ with open(DATA_PATH, "w") as file:
 
     for entry in sorted_entries:
         file.write(f".segment \"BANK{bank_index}\"\n")
+
+        if not entry:
+            bank_index += 1
+            continue
+
         file.write(f"    .incbin \"{entry["path"]}\", $10, $4000\n")
 
         if not entry["flags"] & 0x8: # 32 KiB PRG-ROM
