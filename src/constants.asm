@@ -19,6 +19,7 @@ MMC1_PRG = $E000
 
 ; memory locations
 OAM_BUFFER = $0200 ; OAM buffer address in RAM
+ENTRY_LOADER = $0700 ; entry loader address in RAM
 
 ; amounts and sizes
 FONT_SIZE = (font_data_end - font_data) / 256 ; size of font CHR data in pages

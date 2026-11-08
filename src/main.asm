@@ -95,7 +95,7 @@
             bne clear_ppu ; loop if not done
 
         ; copy entry loader to RAM
-        lda #$07 ; high byte of destination address
+        lda #>ENTRY_LOADER ; high byte of destination address
         sta address + 1 ; store value in destination address
 
         lda #$00 ; low byte of destination address
@@ -314,7 +314,7 @@
                 ldx entry_index ; load current entry index
                 ldy entry_banks, x ; load bank number for selected entry
 
-                jmp $0700 ; jump to entry loader in RAM
+                jmp ENTRY_LOADER ; jump to entry loader in RAM
         :
             ; unset vblank bit inside state
             lda state ; load current state
