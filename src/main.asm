@@ -286,7 +286,7 @@
                 lsr ; divide by 2
 
                 clc ; clear carry flag
-                adc #10 ; add offset to get bank number
+                adc #ENTRY_OFFSET ; add offset to get bank number
 
                 jsr switch_bank ; switch to selected bank
 

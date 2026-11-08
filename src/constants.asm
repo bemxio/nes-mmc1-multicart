@@ -23,6 +23,7 @@ OAM_BUFFER = $0200 ; OAM buffer address in RAM
 ; amounts and sizes
 FONT_SIZE = (font_data_end - font_data) / 256 ; size of font CHR data in pages
 ENTRY_AMOUNT = (title_lengths - entry_titles) / 2 ; amount of entries in menu
+ENTRY_OFFSET = ENTRY_AMOUNT & %11111110 + 2 ; bank number offset for CHR data
 
 ; background and text colors
 BACKGROUND_COLOR = $0f ; black
