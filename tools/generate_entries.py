@@ -52,6 +52,9 @@ for filename in sorted(os.listdir(ROMS_DIR)):
         "flags": flags
     }
 
+# sort entries by PRG-ROM size (16 KiB first, then 32 KiB)
+sorted_entries = sorted(entries.values(), key=lambda entry: not entry["flags"] & 0x8)
+
 # write entry titles to source file
 with open(ENTRIES_PATH, "w") as file:
     file.write("; menu entry titles\n")
@@ -78,20 +81,7 @@ with open(ENTRIES_PATH, "w") as file:
 
     file.write("\n; entry bank numbers\n")
     file.write("entry_banks:\n")
-    file.write("    .byte ")
-
-    offset = 0
-
-    for index, entry in enumerate(entries.values()):
-        file.write(str(index + offset))
-
-        if index != len(entries) - 1:
-            file.write(", ")
-        else:
-            file.write("\n")
-
-        if not entry["flags"] & 0x8: # 32 KiB PRG-ROM
-            offset += 1
+    file.write(f"    .byte {", ".join(str(sorted_entries.index(entry)) for entry in entries.values())}\n")
 
     file.write("\n; MMC1 control flags\n")
     file.write("entry_flags:\n")
@@ -103,7 +93,7 @@ bank_index = 0
 with open(DATA_PATH, "w") as file:
     file.write("; PRG-ROM\n")
 
-    for entry in entries.values():
+    for entry in sorted_entries:
         file.write(f".segment \"BANK{bank_index}\"\n")
         file.write(f"    .incbin \"{entry["path"]}\", $10, $4000\n")
 
