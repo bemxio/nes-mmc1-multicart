@@ -54,6 +54,7 @@ for filename in sorted(os.listdir(ROMS_DIR)):
 
 # write entry titles to source file
 with open(ENTRIES_PATH, "w") as file:
+    file.write("; menu entry titles\n")
     file.write("entry_titles:")
     file.write("\n    ; lookup table\n")
 
@@ -65,7 +66,7 @@ with open(ENTRIES_PATH, "w") as file:
 
     for previous, current in zip_longest(entries.keys(), list(entries.keys())[1:]):
         if current is None:
-            file.write(f"        .byte entry_flags - {previous}_title\n")
+            file.write(f"        .byte entry_banks - {previous}_title\n")
         else:
             file.write(f"        .byte {current}_title - {previous}_title\n")
 
@@ -74,6 +75,23 @@ with open(ENTRIES_PATH, "w") as file:
     for label, entry in entries.items():
         file.write(f"    {label}_title:\n")
         file.write(f"        .byte {", ".join(f"${value:02x}" for value in text_to_tiles(entry["title"]))} ; \"{entry["title"]}\"\n")
+
+    file.write("\n; entry bank numbers\n")
+    file.write("entry_banks:\n")
+    file.write("    .byte ")
+
+    offset = 0
+
+    for index, entry in enumerate(entries.values()):
+        file.write(str(index + offset))
+
+        if index != len(entries) - 1:
+            file.write(", ")
+        else:
+            file.write("\n")
+
+        if not entry["flags"] & 0x8: # 32 KiB PRG-ROM
+            offset += 1
 
     file.write("\n; MMC1 control flags\n")
     file.write("entry_flags:\n")

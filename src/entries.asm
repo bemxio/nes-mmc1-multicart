@@ -1,3 +1,4 @@
+; menu entry titles
 entry_titles:
     ; lookup table
     .word balloon_fight_title
@@ -20,7 +21,7 @@ entry_titles:
         .byte mario_bros_title - ice_climber_title
         .byte pacman_title - mario_bros_title
         .byte super_mario_bros_title - pacman_title
-        .byte entry_flags - super_mario_bros_title
+        .byte entry_banks - super_mario_bros_title
 
     ; string data
     balloon_fight_title:
@@ -41,6 +42,10 @@ entry_titles:
         .byte $60, $82, $86, $1a, $5a, $82, $9c ; "Pac-Man"
     super_mario_bros_title:
         .byte $66, $aa, $a0, $8a, $a4, $00, $5a, $82, $a4, $92, $9e, $00, $44, $a4, $9e, $a6, $1c ; "Super Mario Bros."
+
+; entry bank numbers
+entry_banks:
+    .byte 0, 1, 2, 3, 4, 5, 6, 7, 8
 
 ; MMC1 control flags
 entry_flags:

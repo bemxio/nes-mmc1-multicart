@@ -311,6 +311,9 @@
                     dex ; decrement number of pages of data
                     bne copy_entry_tiles ; loop if not done
 
+                ldx entry_index ; load current entry index
+                ldy entry_banks, x ; load bank number for selected entry
+
                 jmp $0700 ; jump to entry loader in RAM
         :
             ; unset vblank bit inside state
@@ -341,9 +344,7 @@
     ; entry loader (running in RAM)
     entry_loader:
         ; set entry MMC1 control flags
-        ldx entry_index ; load current entry index
         lda entry_flags, x ; load MMC1 control flags for selected entry
-
         sta MMC1_CTRL ; send first bit to MMC1 control register
 
         .repeat 4 ; repeat 4 times to send remaining bits
@@ -352,7 +353,7 @@
         .endrep
 
         ; switch to appropriate PRG-ROM bank
-        txa ; transfer entry index to accumulator
+        tya ; transfer bank number to accumulator
         sta MMC1_PRG ; send first bit to MMC1 PRG-ROM bank register
 
         .repeat 4 ; repeat 4 times to send remaining bits
